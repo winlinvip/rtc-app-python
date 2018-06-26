@@ -59,10 +59,15 @@ class RESTLogin(object):
         token = sign(channelID, channelKey, appID, user, session, nonce, timestamp)
         print "request: %s, response: %s, token: %s"%((appID, channelID), (requestId, nonce, timestamp, channelKey), token)
 
+        username = "%s?appid=%s&session=%s&channel=%s&nonce=%s&timestamp=%s"%(user, appID, session, channelID, nonce, str(timestamp))
         ret = json.dumps({"code":0, "data":{
             "appid": appID, "userid":user, "gslb":[gslb],
             "session": session, "token": token,
-            "nonce": nonce, "timestamp": timestamp
+            "nonce": nonce, "timestamp": timestamp,
+            "turn": {
+                "username": username,
+                "password": token
+            }
         }})
 
         cherrypy.response.headers["Content-Type"] = "application/json"
