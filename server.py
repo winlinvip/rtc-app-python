@@ -79,10 +79,16 @@ class RESTLogin(object):
 
 class Root(object):
     exposed = True
+    def GET(self):
+        return "AppServer is OK"
 class App(object):
     exposed = True
+    def GET(self):
+        return "AppServer is OK"
 class V1(object):
     exposed = True
+    def GET(self):
+        return "AppServer is OK"
 
 root = Root()
 root.app = App()
