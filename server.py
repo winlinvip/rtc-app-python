@@ -44,7 +44,8 @@ class RESTLogin(object):
     exposed = True
     def __login(self, channelID, user, passwd):
         global channels
-        if channelID not in channels:
+        channelUrl = "%s/%s"%(appID, channelID)
+        if channelUrl not in channels:
             client = AcsClient(accessKeyID, accessKeySecret, regionID)
             request = CreateChannelRequest.CreateChannelRequest()
             request.set_AppId(appID)
@@ -52,12 +53,12 @@ class RESTLogin(object):
             response = client.do_action_with_exception(request)
             print "request: %s, response: %s"%((appID, channelID), response)
             obj = json.loads(response)
-            channels[channelID] = obj
-        obj = channels[channelID]
+            channels[channelUrl] = obj
+        obj = channels[channelUrl]
         session = str(uuid.uuid1())
         (requestId, nonce, timestamp, channelKey) = (obj["RequestId"], obj["Nonce"], obj["Timestamp"], obj["ChannelKey"])
         token = sign(channelID, channelKey, appID, user, session, nonce, timestamp)
-        print "request: %s, response: %s, token: %s"%((appID, channelID), (requestId, nonce, timestamp, channelKey), token)
+        print "url: %s, request: %s, response: %s, token: %s"%(channelUrl, (appID, channelID), (requestId, nonce, timestamp, channelKey), token)
 
         username = "%s?appid=%s&session=%s&channel=%s&nonce=%s&timestamp=%s"%(user, appID, session, channelID, nonce, str(timestamp))
         ret = json.dumps({"code":0, "data":{
