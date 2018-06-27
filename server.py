@@ -5,14 +5,29 @@ from aliyunsdkcore.client import AcsClient
 from aliyunsdkrtc.request.v20180111 import CreateChannelRequest
 
 import sys, os, cherrypy, json, uuid, hashlib
+from optparse import OptionParser
 
-if len(sys.argv) < 6:
-    print "Usage: %s <Listen> <AccessKeyID> <AccessKeySecret> <AppID> <GSLB>"%(sys.argv[0])
+parser = OptionParser()
+parser.add_option("-a", "--listen", dest="listen", help="Listen port")
+parser.add_option("-b", "--access-key-id", dest="accessKeyID", help="ID of access key")
+parser.add_option("-c", "--access-key-secret", dest="accessKeySecret", help="Secret of access key")
+parser.add_option("-d", "--appid", dest="appID", help="ID of app")
+parser.add_option("-e", "--gslb", dest="gslb", help="URL of GSLB")
+
+(options, args) = parser.parse_args()
+(listen, accessKeyID, accessKeySecret, appID, gslb) = (options.listen, options.accessKeyID, options.accessKeySecret, options.appID, options.gslb)
+
+if None in (listen, accessKeyID, accessKeySecret, appID, gslb):
+    print "Usage: %s <--listen=Listen> <--access-key-id=AccessKeyID> <--access-key-secret=AccessKeySecret> <--appid=AppID> <--gslb=GSLB>"%(sys.argv[0])
+    print "     --listen                Server listen port"
+    print "     ----access-key-id       ID of access key"
+    print "     ----access-key-secret   Secret of access key"
+    print "     ----appid               ID of app"
+    print "     ----gslb                URL of GSLB"
     print "For example:"
-    print "     %s 8080 OGAEkdiL62AkwSgs 4JaIs4SG4dLwPsQSwGAHzeOQKxO6iw iwo5l81k https://rgslb.rtc.aliyuncs.com"%(sys.argv[0])
+    print "     %s --listen=8080 --access-key-id=OGAEkdiL62AkwSgs --access-key-secret=4JaIs4SG4dLwPsQSwGAHzeOQKxO6iw --appid=iwo5l81k --gslb=https://rgslb.rtc.aliyuncs.com"%(sys.argv[0])
     sys.exit(-1)
 
-(listen, accessKeyID, accessKeySecret, appID, gslb) = sys.argv[1:]
 regionID= "cn-hangzhou"
 print "Listen=%s, AccessKeyID=%s, AccessKeySecret=%s, RegionID=%s, AppID=%s, GSLB=%s"%(listen, accessKeyID, accessKeySecret, regionID, appID, gslb)
 
