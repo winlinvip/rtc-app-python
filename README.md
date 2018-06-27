@@ -39,13 +39,13 @@ AppID: iwo5l81k
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-6. Setup Client SDK:
+6. Verify AppServer:
 
-```
-http://30.2.228.19:8080/app/v1
-```
+http://localhost:8088/app/v1/login?room=5678&user=nvivy&passwd=12345678
 
-> Remark: Please use your AppServer IP instead.
+> Remark: You can setup client SDK `http://30.2.228.19:8080/app/v1`.
+
+> Remark: Please use your AppServer IP instead by `ifconfig en0`.
 
 ## Links
 
