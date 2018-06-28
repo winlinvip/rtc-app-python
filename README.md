@@ -16,7 +16,7 @@ git clone https://github.com/winlinvip/rtc-app-python.git && cd rtc-app-python &
 (rm -rf CherryPy-3.2.2 && unzip -q CherryPy-3.2.2.zip && cd CherryPy-3.2.2 && python setup.py install --user)
 ```
 
-2. Install AliRTC OpenAPI SDK:
+2. Install AliRTC OpenAPI SDK by:
 
 ```
 pip install aliyun-python-sdk-rtc --user
@@ -43,7 +43,7 @@ AppID: iwo5l81k
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-6. Verify AppServer by [here](http://localhost:8088/app/v1/login?room=5678&user=nvivy&passwd=12345678).
+6. Verify AppServer by [here](http://localhost:8080/app/v1/login?room=5678&user=nvivy&passwd=12345678).
 
 > Remark: You can setup client native SDK by `http://30.2.228.19:8080/app/v1`.
 
@@ -59,7 +59,7 @@ git clone https://github.com/winlinvip/rtc-app-python.git && cd rtc-app-python &
 (rm -rf CherryPy-3.2.2 && unzip -q CherryPy-3.2.2.zip && cd CherryPy-3.2.2 && python setup.py install --user)
 ```
 
-2. Install AliRTC OpenAPI SDK:
+2. Install AliRTC OpenAPI SDK by:
 
 ```
 sudo pip install aliyun-python-sdk-rtc
@@ -86,7 +86,7 @@ AppID: iwo5l81k
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-6. Verify AppServer by [here](http://localhost:8088/app/v1/login?room=5678&user=nvivy&passwd=12345678).
+6. Verify AppServer by [here](http://localhost:8080/app/v1/login?room=5678&user=nvivy&passwd=12345678).
 
 > Remark: You can setup client native SDK by `http://30.2.228.19:8080/app/v1`.
 
@@ -145,12 +145,12 @@ AppID: iwo5l81k
 10. Start AppServer, **use your information**:
 
 ```
-./server.py --listen=8080 --access-key-id=OGAEkdiL62AkwSgs \
+python server.py --listen=8080 --access-key-id=OGAEkdiL62AkwSgs \
 	--access-key-secret=4JaIs4SG4dLwPsQSwGAHzeOQKxO6iw --appid=iwo5l81k \
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-11. Verify AppServer by [here](http://localhost:8088/app/v1/login?room=5678&user=nvivy&passwd=12345678).
+11. Verify AppServer by [here](http://localhost:8080/app/v1/login?room=5678&user=nvivy&passwd=12345678).
 
 > Remark: You can setup client native SDK by `http://30.2.228.19:8080/app/v1`.
 
