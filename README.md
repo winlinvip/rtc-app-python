@@ -22,6 +22,8 @@ git clone https://github.com/winlinvip/rtc-app-python.git && cd rtc-app-python &
 pip install aliyun-python-sdk-rtc --user
 ```
 
+> Remark: There maybe some errors, please ignore them.
+
 3. Generate AK from [here](https://usercenter.console.aliyun.com/#/manage/ak):
 
 ```
@@ -78,6 +80,8 @@ git clone https://github.com/winlinvip/rtc-app-python.git && cd rtc-app-python &
 ```
 sudo pip install aliyun-python-sdk-rtc
 ```
+
+> Remark: There maybe some errors, please ignore them.
 
 4. Generate AK from [here](https://usercenter.console.aliyun.com/#/manage/ak):
 
