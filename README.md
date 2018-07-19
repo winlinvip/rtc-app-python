@@ -6,6 +6,11 @@ Python AppServer for AliRTC.
 * [MacPro](#macpro)
 * [Windows](#windows)
 
+For all languages:
+
+* [Python](https://github.com/winlinvip/rtc-app-python).
+* [Java](https://github.com/winlinvip/rtc-app-java).
+
 ## CentOS6
 
 1. Setup Python:

@@ -19,11 +19,11 @@ parser.add_option("-e", "--gslb", dest="gslb", help="URL of GSLB")
 
 if None in (listen, accessKeyID, accessKeySecret, appID, gslb):
     print "Usage: %s <--listen=Listen> <--access-key-id=AccessKeyID> <--access-key-secret=AccessKeySecret> <--appid=AppID> <--gslb=GSLB>"%(sys.argv[0])
-    print "     --listen                Server listen port"
-    print "     ----access-key-id       ID of access key"
-    print "     ----access-key-secret   Secret of access key"
-    print "     ----appid               ID of app"
-    print "     ----gslb                URL of GSLB"
+    print "     --listen              Server listen port"
+    print "     --access-key-id       ID of access key"
+    print "     --access-key-secret   Secret of access key"
+    print "     --appid               ID of app"
+    print "     --gslb                URL of GSLB"
     print "For example:"
     print "     %s --listen=8080 --access-key-id=OGAEkdiL62AkwSgs --access-key-secret=4JaIs4SG4dLwPsQSwGAHzeOQKxO6iw --appid=iwo5l81k --gslb=https://rgslb.rtc.aliyuncs.com"%(sys.argv[0])
     sys.exit(-1)
