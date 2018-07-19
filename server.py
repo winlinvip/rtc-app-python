@@ -88,15 +88,21 @@ class RESTLogin(object):
 
         cherrypy.response.headers["Content-Type"] = "application/json"
         return ret
+    def allow_cros(self):
+        if "Origin" in cherrypy.request.headers:
+            cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
+            cherrypy.response.headers["Access-Control-Allow-Methods"] = "GET,POST,HEAD,PUT,DELETE,OPTIONS"
+            cherrypy.response.headers["Access-Control-Expose-Headers"] = "Server,Range,Content-Length,Content-Range"
+            cherrypy.response.headers["Access-Control-Allow-Headers"] = "Origin,Range,Accept-Encoding,Referer,Cache-Control,X-Proxy-Authorization,X-Requested-With,Content-Type"
     def GET(self, room, user, passwd):
+        self.allow_cros()
         return self.__login(room, user, passwd)
     def POST(self, room, user, passwd):
+        self.allow_cros()
         return self.__login(room, user, passwd)
-    def OPTIONS(self):
-        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
-        cherrypy.response.headers["Access-Control-Allow-Methods"] = "GET, POST, HEAD, PUT, DELETE"
-        allow_headers = ["Cache-Control", "X-Proxy-Authorization", "X-Requested-With", "Content-Type"]
-        cherrypy.response.headers["Access-Control-Allow-Headers"] = ",".join(allow_headers)
+    def OPTIONS(self, *args, **kwargs):
+        self.allow_cros()
+        return ""
 
 class Root(object):
     exposed = True
