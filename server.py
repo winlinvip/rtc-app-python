@@ -43,8 +43,21 @@ conf = {
 
 channels = {}
 
+def createChannel(appID, channelID,
+    accessKeyID, accessKeySecret, regionID
+):
+    client = AcsClient(accessKeyID, accessKeySecret, regionID)
+    request = CreateChannelRequest.CreateChannelRequest()
+    request.set_AppId(appID)
+    request.set_ChannelId(channelID)
+    response = client.do_action_with_exception(request)
+    obj = json.loads(response)
+    return obj
+
 # https://help.aliyun.com/document_detail/74890.html
-def sign(channelID, channelKey, appID, userID, session, nonce, timestamp):
+def sign(channelID, channelKey,
+    appID, userID, session, nonce, timestamp
+):
     h = hashlib.sha256()
     h.update(channelID)
     h.update(channelKey)
@@ -61,13 +74,8 @@ class RESTLogin(object):
         global channels
         channelUrl = "%s/%s"%(appID, channelID)
         if channelUrl not in channels:
-            client = AcsClient(accessKeyID, accessKeySecret, regionID)
-            request = CreateChannelRequest.CreateChannelRequest()
-            request.set_AppId(appID)
-            request.set_ChannelId(channelID)
-            response = client.do_action_with_exception(request)
-            print "request: %s, response: %s"%((appID, channelID), response)
-            obj = json.loads(response)
+            obj = createChannel(appID, channelID, accessKeyID, accessKeySecret, regionID)
+            print "request: %s, response: %s"%((appID, channelID), obj)
             channels[channelUrl] = obj
         obj = channels[channelUrl]
         session = str(uuid.uuid1())
