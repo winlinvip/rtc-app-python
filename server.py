@@ -43,26 +43,26 @@ conf = {
 
 channels = {}
 
-def createChannel(appID, channelID,
-    accessKeyID, accessKeySecret, regionID
+def create_channel(app_id, channel_id,
+    access_key_id, access_key_secret, region_id
 ):
-    client = AcsClient(accessKeyID, accessKeySecret, regionID)
+    client = AcsClient(access_key_id, access_key_secret, region_id)
     request = CreateChannelRequest.CreateChannelRequest()
-    request.set_AppId(appID)
-    request.set_ChannelId(channelID)
+    request.set_AppId(app_id)
+    request.set_ChannelId(channel_id)
     response = client.do_action_with_exception(request)
     obj = json.loads(response)
     return obj
 
 # https://help.aliyun.com/document_detail/74890.html
-def sign(channelID, channelKey,
-    appID, userID, session, nonce, timestamp
+def sign(channel_id, channel_key,
+    app_id, user_id, session, nonce, timestamp
 ):
     h = hashlib.sha256()
-    h.update(channelID)
-    h.update(channelKey)
-    h.update(appID)
-    h.update(userID)
+    h.update(channel_id)
+    h.update(channel_key)
+    h.update(app_id)
+    h.update(user_id)
     h.update(session)
     h.update(nonce)
     h.update(str(timestamp))
@@ -74,18 +74,18 @@ class RESTLogin(object):
         global channels
         channelUrl = "%s/%s"%(appID, channelID)
         if channelUrl not in channels:
-            obj = createChannel(appID, channelID, accessKeyID, accessKeySecret, regionID)
+            obj = create_channel(appID, channelID, accessKeyID, accessKeySecret, regionID)
             print "request: %s, response: %s"%((appID, channelID), obj)
             channels[channelUrl] = obj
         obj = channels[channelUrl]
-        session = str(uuid.uuid1())
+        (userid, session) = (str(uuid.uuid1()), str(uuid.uuid1()))
         (requestId, nonce, timestamp, channelKey) = (obj["RequestId"], obj["Nonce"], obj["Timestamp"], obj["ChannelKey"])
-        token = sign(channelID, channelKey, appID, user, session, nonce, timestamp)
+        token = sign(channelID, channelKey, appID, userid, session, nonce, timestamp)
         print "url: %s, request: %s, response: %s, token: %s"%(channelUrl, (appID, channelID), (requestId, nonce, timestamp, channelKey), token)
 
-        username = "%s?appid=%s&session=%s&channel=%s&nonce=%s&timestamp=%s"%(user, appID, session, channelID, nonce, str(timestamp))
+        username = "%s?appid=%s&session=%s&channel=%s&nonce=%s&timestamp=%s"%(userid, appID, session, channelID, nonce, str(timestamp))
         ret = json.dumps({"code":0, "data":{
-            "appid": appID, "userid":user, "gslb":[gslb],
+            "appid": appID, "userid":userid, "gslb":[gslb],
             "session": session, "token": token,
             "nonce": nonce, "timestamp": timestamp,
             "turn": {
