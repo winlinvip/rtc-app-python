@@ -66,7 +66,8 @@ def sign(channel_id, channel_key,
     h.update(session)
     h.update(nonce)
     h.update(str(timestamp))
-    return h.hexdigest()
+    token = h.hexdigest()
+    return token
 
 class RESTLogin(object):
     exposed = True
