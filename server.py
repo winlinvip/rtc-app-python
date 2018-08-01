@@ -8,7 +8,7 @@ import aliyunsdkcore.profile.region_provider as rtc_user_config
 import aliyunsdkcore.request as rtc_request
 import aliyunsdkcore.http.protocol_type as rtc_protocol_type
 
-import sys, os, cherrypy, json, uuid, hashlib
+import sys, os, cherrypy, json, uuid, hashlib, time
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -19,9 +19,9 @@ parser.add_option("-d", "--appid", dest="appID", help="ID of app")
 parser.add_option("-e", "--gslb", dest="gslb", help="URL of GSLB")
 
 (options, args) = parser.parse_args()
-(listen, accessKeyID, accessKeySecret, appID, gslb) = (options.listen, options.accessKeyID, options.accessKeySecret, options.appID, options.gslb)
+(listen, accessKeyID, accessKeySecret, app_id, gslb) = (options.listen, options.accessKeyID, options.accessKeySecret, options.appID, options.gslb)
 
-if None in (listen, accessKeyID, accessKeySecret, appID, gslb):
+if None in (listen, accessKeyID, accessKeySecret, app_id, gslb):
     print "Usage: %s <--listen=Listen> <--access-key-id=AccessKeyID> <--access-key-secret=AccessKeySecret> <--appid=AppID> <--gslb=GSLB>"%(sys.argv[0])
     print "     --listen              Server listen port"
     print "     --access-key-id       ID of access key"
@@ -35,7 +35,7 @@ if None in (listen, accessKeyID, accessKeySecret, appID, gslb):
 regionID = "cn-hangzhou"
 endpoint = "rtc.aliyuncs.com"
 print "Listen=%s, AccessKeyID=%s, AccessKeySecret=%s, RegionID=%s, AppID=%s, GSLB=%s, endpoint=%s"%(
-    listen, accessKeyID, accessKeySecret, regionID, appID, gslb, endpoint)
+    listen, accessKeyID, accessKeySecret, regionID, app_id, gslb, endpoint)
 
 conf = {
     'global': {
@@ -48,6 +48,15 @@ conf = {
 }
 
 channels = {}
+
+class ChannelAuth:
+    def __init__(self):
+        self.app_id = None
+        self.channel_id = None
+        self.nonce = None
+        self.timestamp = None
+        self.channel_key = None
+        self.request_id = None
 
 def create_channel(app_id, channel_id,
     access_key_id, access_key_secret, region_id, endpoint
@@ -73,7 +82,15 @@ def create_channel(app_id, channel_id,
 
     response = client.do_action_with_exception(request)
     obj = json.loads(response)
-    return obj
+
+    auth = ChannelAuth()
+    auth.app_id = app_id
+    auth.channel_id = channel_id
+    auth.nonce = obj['Nonce']
+    auth.timestamp = obj['Timestamp']
+    auth.channel_key = obj['ChannelKey']
+    auth.request_id = obj['RequestId']
+    return auth
 
 # https://help.aliyun.com/document_detail/74890.html
 def sign(channel_id, channel_key,
@@ -92,25 +109,33 @@ def sign(channel_id, channel_key,
 
 class RESTLogin(object):
     exposed = True
-    def __login(self, channelID, user, passwd):
+    def __login(self, channel_id, user, passwd):
+        starttime = time.time()
+
         global channels
-        channelUrl = "%s/%s"%(appID, channelID)
+        channelUrl = "%s/%s"%(app_id, channel_id)
         if channelUrl not in channels:
-            obj = create_channel(appID, channelID, accessKeyID, accessKeySecret, regionID, endpoint)
-            print "request: %s, response: %s"%((appID, channelID), obj)
-            channels[channelUrl] = obj
-        obj = channels[channelUrl]
+            auth = create_channel(app_id, channel_id, accessKeyID, accessKeySecret, regionID, endpoint)
+            print "CreateChannel requestID=%s, cost=%sms, channelId=%s, nonce=%s, timestamp=%d, channelKey=%s"%(
+                auth.request_id, int(1000 * (time.time() - starttime)), auth.channel_id, auth.nonce, auth.timestamp,
+                auth.channel_key
+            )
+            channels[channelUrl] = auth
+        auth = channels[channelUrl]
 
         (userid, session) = (str(uuid.uuid1()), str(uuid.uuid1()))
-        (requestId, nonce, timestamp, channelKey) = (obj["RequestId"], obj["Nonce"], obj["Timestamp"], obj["ChannelKey"])
-        token = sign(channelID, channelKey, appID, userid, session, nonce, timestamp)
-        print "url: %s, request: %s, response: %s, token: %s"%(channelUrl, (appID, channelID), (requestId, nonce, timestamp, channelKey), token)
+        token = sign(channel_id, auth.channel_key, app_id, userid, session, auth.nonce, auth.timestamp)
+        print "Sign cost=%dms, user=%s, userid=%s, session=%s, token=%s, channel_key=%s"%(
+            int(1000 * (time.time() - starttime)), user, userid, session, token, auth.channel_key
+        )
 
-        username = "%s?appid=%s&session=%s&channel=%s&nonce=%s&timestamp=%s"%(userid, appID, session, channelID, nonce, str(timestamp))
+        username = "%s?appid=%s&session=%s&channel=%s&nonce=%s&timestamp=%d"%(
+            userid, app_id, session, channel_id, auth.nonce, auth.timestamp
+        )
         ret = json.dumps({"code":0, "data":{
-            "appid": appID, "userid":userid, "gslb":[gslb],
+            "appid": app_id, "userid":userid, "gslb":[gslb],
             "session": session, "token": token,
-            "nonce": nonce, "timestamp": timestamp,
+            "nonce": auth.nonce, "timestamp": auth.timestamp,
             "turn": {
                 "username": username,
                 "password": token
