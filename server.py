@@ -4,7 +4,6 @@
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkrtc.request.v20180111 import CreateChannelRequest
 from aliyunsdkcore.acs_exception.exceptions import ServerException
-
 import aliyunsdkcore.profile.region_provider as rtc_user_config
 import aliyunsdkcore.request as rtc_request
 import aliyunsdkcore.http.protocol_type as rtc_protocol_type
@@ -77,7 +76,7 @@ def recover_for_error(ex, app_id, channel_id):
     if fatal:
         raise ex
 
-    recovered = "RCV-%s"%str(uuid.uuid1())
+    recovered = "RCV-%s"%str(uuid.uuid4())
     print "Recover from %s, recovered=%s"%(ex, recovered)
 
     auth = ChannelAuth()
@@ -129,9 +128,7 @@ def create_channel(app_id, channel_id,
         return recover_for_error(ex, app_id, channel_id)
 
 # https://help.aliyun.com/document_detail/74890.html
-def sign(channel_id, channel_key,
-    app_id, user_id, session, nonce, timestamp
-):
+def create_token(channel_id, channel_key, app_id, user_id, session, nonce, timestamp):
     h = hashlib.sha256()
     h.update(channel_id)
     h.update(channel_key)
@@ -164,8 +161,8 @@ class RESTLogin(object):
         else:
             auth = channels[channelUrl]
 
-        (userid, session) = (str(uuid.uuid1()), str(uuid.uuid1()))
-        token = sign(channel_id, auth.channel_key, app_id, userid, session, auth.nonce, auth.timestamp)
+        (userid, session) = (str(uuid.uuid4()), str(uuid.uuid4()))
+        token = create_token(channel_id, auth.channel_key, app_id, userid, session, auth.nonce, auth.timestamp)
         print "Sign cost=%dms, user=%s, userid=%s, session=%s, token=%s, channel_key=%s"%(
             int(1000 * (time.time() - starttime)), user, userid, session, token, auth.channel_key
         )
