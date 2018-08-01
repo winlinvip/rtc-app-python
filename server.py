@@ -3,6 +3,7 @@
 
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkrtc.request.v20180111 import CreateChannelRequest
+import aliyunsdkcore.profile.region_provider as rtc_user_config
 
 import sys, os, cherrypy, json, uuid, hashlib
 from optparse import OptionParser
@@ -28,8 +29,10 @@ if None in (listen, accessKeyID, accessKeySecret, appID, gslb):
     print "     %s --listen=8080 --access-key-id=OGAEkdiL62AkwSgs --access-key-secret=4JaIs4SG4dLwPsQSwGAHzeOQKxO6iw --appid=iwo5l81k --gslb=https://rgslb.rtc.aliyuncs.com"%(sys.argv[0])
     sys.exit(-1)
 
-regionID= "cn-hangzhou"
-print "Listen=%s, AccessKeyID=%s, AccessKeySecret=%s, RegionID=%s, AppID=%s, GSLB=%s"%(listen, accessKeyID, accessKeySecret, regionID, appID, gslb)
+regionID = "cn-hangzhou"
+endpoint = "rtc.aliyuncs.com"
+print "Listen=%s, AccessKeyID=%s, AccessKeySecret=%s, RegionID=%s, AppID=%s, GSLB=%s, endpoint=%s"%(
+    listen, accessKeyID, accessKeySecret, regionID, appID, gslb, endpoint)
 
 conf = {
     'global': {
@@ -44,12 +47,24 @@ conf = {
 channels = {}
 
 def create_channel(app_id, channel_id,
-    access_key_id, access_key_secret, region_id
+    access_key_id, access_key_secret, region_id, endpoint
 ):
     client = AcsClient(access_key_id, access_key_secret, region_id)
     request = CreateChannelRequest.CreateChannelRequest()
     request.set_AppId(app_id)
     request.set_ChannelId(channel_id)
+
+    # Strongly recomment to set the RTC endpoint,
+    # because the exception is not the "right" one if not set.
+    # For example, if access-key-id is invalid:
+    #      1. if endpoint is set, exception is InvalidAccessKeyId.NotFound
+    #      2. if endpoint isn't set, exception is SDK.InvalidRegionId
+    # that's caused by query endpoint failed.
+    # @remark SDk will cache endpoints, however it will query endpoint for the first
+    #      time, so it's good for performance to set the endpoint.
+    if request.get_product() not in rtc_user_config.user_config_endpoints:
+        rtc_user_config.modify_point(request.get_product(), region_id, endpoint)
+
     response = client.do_action_with_exception(request)
     obj = json.loads(response)
     return obj
@@ -75,10 +90,11 @@ class RESTLogin(object):
         global channels
         channelUrl = "%s/%s"%(appID, channelID)
         if channelUrl not in channels:
-            obj = create_channel(appID, channelID, accessKeyID, accessKeySecret, regionID)
+            obj = create_channel(appID, channelID, accessKeyID, accessKeySecret, regionID, endpoint)
             print "request: %s, response: %s"%((appID, channelID), obj)
             channels[channelUrl] = obj
         obj = channels[channelUrl]
+
         (userid, session) = (str(uuid.uuid1()), str(uuid.uuid1()))
         (requestId, nonce, timestamp, channelKey) = (obj["RequestId"], obj["Nonce"], obj["Timestamp"], obj["ChannelKey"])
         token = sign(channelID, channelKey, appID, userid, session, nonce, timestamp)
