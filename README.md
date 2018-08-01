@@ -212,4 +212,5 @@ AliRTC python OpenAPI SDK is [here](https://develop.aliyun.com/tools/sdk#/python
 
 ## History
 
+* [8ef1883](https://github.com/winlinvip/rtc-app-python/commit/8ef1883f438ed08dc1835cc8af100acb76f94608), Set endpoint to get correct error.
 * Support create channel and sign user token.

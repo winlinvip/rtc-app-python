@@ -3,7 +3,10 @@
 
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkrtc.request.v20180111 import CreateChannelRequest
+
 import aliyunsdkcore.profile.region_provider as rtc_user_config
+import aliyunsdkcore.request as rtc_request
+import aliyunsdkcore.http.protocol_type as rtc_protocol_type
 
 import sys, os, cherrypy, json, uuid, hashlib
 from optparse import OptionParser
@@ -64,6 +67,9 @@ def create_channel(app_id, channel_id,
     #      time, so it's good for performance to set the endpoint.
     if request.get_product() not in rtc_user_config.user_config_endpoints:
         rtc_user_config.modify_point(request.get_product(), region_id, endpoint)
+
+    # Use HTTP, x3 times faster than HTTPS.
+    rtc_request.set_default_protocol_type(rtc_protocol_type.HTTP)
 
     response = client.do_action_with_exception(request)
     obj = json.loads(response)
