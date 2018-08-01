@@ -3,6 +3,7 @@
 
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkrtc.request.v20180111 import CreateChannelRequest
+from aliyunsdkcore.acs_exception.exceptions import ServerException
 
 import aliyunsdkcore.profile.region_provider as rtc_user_config
 import aliyunsdkcore.request as rtc_request
@@ -56,41 +57,76 @@ class ChannelAuth:
         self.nonce = None
         self.timestamp = None
         self.channel_key = None
+        self.recovered = None
         self.request_id = None
 
-def create_channel(app_id, channel_id,
-    access_key_id, access_key_secret, region_id, endpoint
-):
-    client = AcsClient(access_key_id, access_key_secret, region_id)
-    request = CreateChannelRequest.CreateChannelRequest()
-    request.set_AppId(app_id)
-    request.set_ChannelId(channel_id)
+def recover_for_error(ex, app_id, channel_id):
+    fatal = False
+    request_id = ""
 
-    # Strongly recomment to set the RTC endpoint,
-    # because the exception is not the "right" one if not set.
-    # For example, if access-key-id is invalid:
-    #      1. if endpoint is set, exception is InvalidAccessKeyId.NotFound
-    #      2. if endpoint isn't set, exception is SDK.InvalidRegionId
-    # that's caused by query endpoint failed.
-    # @remark SDk will cache endpoints, however it will query endpoint for the first
-    #      time, so it's good for performance to set the endpoint.
-    if request.get_product() not in rtc_user_config.user_config_endpoints:
-        rtc_user_config.modify_point(request.get_product(), region_id, endpoint)
+    if isinstance(ex, ServerException):
+        request_id = ex.get_request_id()
+        code = ex.get_error_code()
+        if code == "IllegalOperationApp":
+            fatal = True
+        elif code.startswith("InvalidAccessKeyId"):
+            fatal = True
+        elif code == "SignatureDoesNotMatch":
+            fatal = True
 
-    # Use HTTP, x3 times faster than HTTPS.
-    rtc_request.set_default_protocol_type(rtc_protocol_type.HTTP)
+    if fatal:
+        raise ex
 
-    response = client.do_action_with_exception(request)
-    obj = json.loads(response)
+    recovered = "RCV-%s"%str(uuid.uuid1())
+    print "Recover from %s, recovered=%s"%(ex, recovered)
 
     auth = ChannelAuth()
     auth.app_id = app_id
     auth.channel_id = channel_id
-    auth.nonce = obj['Nonce']
-    auth.timestamp = obj['Timestamp']
-    auth.channel_key = obj['ChannelKey']
-    auth.request_id = obj['RequestId']
+    auth.nonce = recovered
+    auth.timestamp = 0
+    auth.channel_key = recovered
+    auth.request_id = request_id
+    auth.recovered = True
     return auth
+
+def create_channel(app_id, channel_id,
+    access_key_id, access_key_secret, region_id, endpoint
+):
+    try:
+        client = AcsClient(access_key_id, access_key_secret, region_id)
+        request = CreateChannelRequest.CreateChannelRequest()
+        request.set_AppId(app_id)
+        request.set_ChannelId(channel_id)
+
+        # Strongly recomment to set the RTC endpoint,
+        # because the exception is not the "right" one if not set.
+        # For example, if access-key-id is invalid:
+        #      1. if endpoint is set, exception is InvalidAccessKeyId.NotFound
+        #      2. if endpoint isn't set, exception is SDK.InvalidRegionId
+        # that's caused by query endpoint failed.
+        # @remark SDk will cache endpoints, however it will query endpoint for the first
+        #      time, so it's good for performance to set the endpoint.
+        if request.get_product() not in rtc_user_config.user_config_endpoints:
+            rtc_user_config.modify_point(request.get_product(), region_id, endpoint)
+
+        # Use HTTP, x3 times faster than HTTPS.
+        rtc_request.set_default_protocol_type(rtc_protocol_type.HTTP)
+
+        response = client.do_action_with_exception(request)
+        obj = json.loads(response)
+
+        auth = ChannelAuth()
+        auth.app_id = app_id
+        auth.channel_id = channel_id
+        auth.nonce = obj['Nonce']
+        auth.timestamp = obj['Timestamp']
+        auth.channel_key = obj['ChannelKey']
+        auth.request_id = obj['RequestId']
+        auth.recovered = False
+        return auth
+    except Exception as ex:
+        return recover_for_error(ex, app_id, channel_id)
 
 # https://help.aliyun.com/document_detail/74890.html
 def sign(channel_id, channel_key,
@@ -120,8 +156,13 @@ class RESTLogin(object):
                 auth.request_id, int(1000 * (time.time() - starttime)), auth.channel_id, auth.nonce, auth.timestamp,
                 auth.channel_key
             )
-            channels[channelUrl] = auth
-        auth = channels[channelUrl]
+
+            # If recovered from error, we should never cache it,
+            # and we should try to request again next time.
+            if not auth.recovered:
+                channels[channelUrl] = auth
+        else:
+            auth = channels[channelUrl]
 
         (userid, session) = (str(uuid.uuid1()), str(uuid.uuid1()))
         token = sign(channel_id, auth.channel_key, app_id, userid, session, auth.nonce, auth.timestamp)

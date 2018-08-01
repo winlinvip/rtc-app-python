@@ -212,7 +212,8 @@ AliRTC python OpenAPI SDK is [here](https://develop.aliyun.com/tools/sdk#/python
 
 ## History
 
-* Log the request id and cost in ms.
+* Support recover for some OpenAPI error.
+* [04399bd](https://github.com/winlinvip/rtc-app-python/commit/04399bd0ba43ec66f30e176c8b732bf64a8b815d), Log the request id and cost in ms.
 * [d41e5dd](https://github.com/winlinvip/rtc-app-python/commit/d41e5dd029d73c73ea5fe18016b3337bd5433778), Use HTTP, x3 times faster than HTTPS.
 * [8ef1883](https://github.com/winlinvip/rtc-app-python/commit/8ef1883f438ed08dc1835cc8af100acb76f94608), Set endpoint to get correct error.
 * Support create channel and sign user token.
