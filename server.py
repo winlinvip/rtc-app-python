@@ -127,7 +127,19 @@ def create_channel(app_id, channel_id,
     except Exception as ex:
         return recover_for_error(ex, app_id, channel_id)
 
-# https://help.aliyun.com/document_detail/74890.html
+def create_user_id():
+    return str(uuid.uuid4())
+
+def create_session(app_id, channel_id, channel_key, user_id):
+    h = hashlib.sha256()
+    h.update(app_id)
+    h.update(channel_id)
+    h.update(channel_key)
+    h.update(user_id)
+    h.update(str(time.time()))
+    session = h.hexdigest()
+    return session
+
 def create_token(channel_id, channel_key, app_id, user_id, session, nonce, timestamp):
     h = hashlib.sha256()
     h.update(channel_id)
@@ -161,8 +173,10 @@ class RESTLogin(object):
         else:
             auth = channels[channelUrl]
 
-        (userid, session) = (str(uuid.uuid4()), str(uuid.uuid4()))
-        token = create_token(channel_id, auth.channel_key, app_id, userid, session, auth.nonce, auth.timestamp)
+        userid = create_user_id()
+        session = create_session(app_id, channel_id, auth.channel_key, userid)
+        token = create_token(channel_id, auth.channel_key, app_id, userid, session,
+            auth.nonce, auth.timestamp)
         print "Sign cost=%dms, user=%s, userid=%s, session=%s, token=%s, channel_key=%s"%(
             int(1000 * (time.time() - starttime)), user, userid, session, token, auth.channel_key
         )
