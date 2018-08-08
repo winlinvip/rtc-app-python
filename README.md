@@ -212,7 +212,7 @@ AliRTC python OpenAPI SDK is [here](https://develop.aliyun.com/tools/sdk#/python
 
 ## History
 
-* Update SessionID generation algorithm.
+* [08c35a1](https://github.com/winlinvip/rtc-app-python/commit/08c35a133f85149c72ecd63276d66e784a487c11), Update SessionID generation algorithm.
 * [4dc6a0b](https://github.com/winlinvip/rtc-app-python/commit/4dc6a0b69bb053e0e641377baddd753cd37ffc4f), Support recover for some OpenAPI error.
 * [04399bd](https://github.com/winlinvip/rtc-app-python/commit/04399bd0ba43ec66f30e176c8b732bf64a8b815d), Log the request id and cost in ms.
 * [d41e5dd](https://github.com/winlinvip/rtc-app-python/commit/d41e5dd029d73c73ea5fe18016b3337bd5433778), Use HTTP, x3 times faster than HTTPS.
