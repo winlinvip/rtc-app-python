@@ -130,23 +130,12 @@ def create_channel(app_id, channel_id,
 def create_user_id():
     return str(uuid.uuid4())
 
-def create_session(app_id, channel_id, channel_key, user_id):
-    h = hashlib.sha256()
-    h.update(app_id)
-    h.update(channel_id)
-    h.update(channel_key)
-    h.update(user_id)
-    h.update(str(time.time()))
-    session = h.hexdigest()
-    return session
-
-def create_token(channel_id, channel_key, app_id, user_id, session, nonce, timestamp):
+def create_token(channel_id, channel_key, app_id, user_id, nonce, timestamp):
     h = hashlib.sha256()
     h.update(channel_id)
     h.update(channel_key)
     h.update(app_id)
     h.update(user_id)
-    h.update(session)
     h.update(nonce)
     h.update(str(timestamp))
     token = h.hexdigest()
@@ -174,20 +163,18 @@ class RESTLogin(object):
             auth = channels[channelUrl]
 
         userid = create_user_id()
-        session = create_session(app_id, channel_id, auth.channel_key, userid)
-        token = create_token(channel_id, auth.channel_key, app_id, userid, session,
+        token = create_token(channel_id, auth.channel_key, app_id, userid,
             auth.nonce, auth.timestamp)
-        print "Sign cost=%dms, user=%s, userid=%s, session=%s, token=%s, channel_key=%s"%(
-            int(1000 * (time.time() - starttime)), user, userid, session, token, auth.channel_key
+        print "Sign cost=%dms, user=%s, userid=%s, token=%s, channel_key=%s"%(
+            int(1000 * (time.time() - starttime)), user, userid, token, auth.channel_key
         )
 
-        username = "%s?appid=%s&session=%s&channel=%s&nonce=%s&timestamp=%d"%(
-            userid, app_id, session, channel_id, auth.nonce, auth.timestamp
+        username = "%s?appid=%s&channel=%s&nonce=%s&timestamp=%d"%(
+            userid, app_id, channel_id, auth.nonce, auth.timestamp
         )
         ret = json.dumps({"code":0, "data":{
             "appid": app_id, "userid":userid, "gslb":[gslb],
-            "session": session, "token": token,
-            "nonce": auth.nonce, "timestamp": auth.timestamp,
+            "token": token, "nonce": auth.nonce, "timestamp": auth.timestamp,
             "turn": {
                 "username": username,
                 "password": token

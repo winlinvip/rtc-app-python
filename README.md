@@ -77,13 +77,13 @@ AppID: iwo5l81k
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-6. Verify AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
+6. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
 
 ![AppServer Success](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-ok.png)
 
-![AppServer Error Recovered](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-recovered.png)
-
 ![AppServer Failed](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-failed.png)
+
+![AppServer Error Recovered](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-recovered.png)
 
 > Remark: You can setup client native SDK by `http://30.2.228.19:8080/app/v1`.
 
@@ -142,13 +142,13 @@ AppID: iwo5l81k
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-7. Verify AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
+7. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
 
 ![AppServer Success](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-ok.png)
 
-![AppServer Error Recovered](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-recovered.png)
-
 ![AppServer Failed](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-failed.png)
+
+![AppServer Error Recovered](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-recovered.png)
 
 > Remark: You can setup client native SDK by `http://30.2.228.19:8080/app/v1`.
 
@@ -212,13 +212,13 @@ python server.py --listen=8080 --access-key-id=OGAEkdiL62AkwSgs \
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-11. Verify AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
+11. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
 
 ![AppServer Success](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-ok.png)
 
-![AppServer Error Recovered](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-recovered.png)
-
 ![AppServer Failed](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-failed.png)
+
+![AppServer Error Recovered](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-recovered.png)
 
 > Remark: You can setup client native SDK by `http://30.2.228.19:8080/app/v1`.
 
