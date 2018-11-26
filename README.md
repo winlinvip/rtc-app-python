@@ -77,7 +77,7 @@ AppID: iwo5l81k
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-6. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
+6. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678) or [verify token](http://ossrs.net/talks/ng_index.html#/token-check).
 
 ![AppServer Success](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-ok.png)
 
@@ -142,7 +142,7 @@ AppID: iwo5l81k
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-7. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
+7. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678) or [verify token](http://ossrs.net/talks/ng_index.html#/token-check).
 
 ![AppServer Success](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-ok.png)
 
