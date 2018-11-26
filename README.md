@@ -212,7 +212,7 @@ python server.py --listen=8080 --access-key-id=OGAEkdiL62AkwSgs \
 	--gslb=https://rgslb.rtc.aliyuncs.com
 ```
 
-11. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
+11. Verify  your AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678) or [verify token](http://ossrs.net/talks/ng_index.html#/token-check).
 
 ![AppServer Success](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-ok.png)
 
