@@ -29,7 +29,7 @@ if None in (listen, accessKeyID, accessKeySecret, app_id, gslb):
     print "     --appid               ID of app"
     print "     --gslb                URL of GSLB"
     print "For example:"
-    print "     %s --listen=8080 --access-key-id=OGAEkdiL62AkwSgs --access-key-secret=4JaIs4SG4dLwPsQSwGAHzeOQKxO6iw --appid=iwo5l81k --gslb=https://rgslb.rtc.aliyuncs.com"%(sys.argv[0])
+    print "     %s --listen=8080 --access-key-id=xxxxxxxxxxxxxxxx --access-key-secret=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx --appid=iwo5l81k --gslb=https://rgslb.rtc.aliyuncs.com"%(sys.argv[0])
     sys.exit(-1)
 
 regionID = "cn-hangzhou"
@@ -97,17 +97,6 @@ def create_channel(app_id, channel_id,
         request = CreateChannelRequest.CreateChannelRequest()
         request.set_AppId(app_id)
         request.set_ChannelId(channel_id)
-
-        # Strongly recomment to set the RTC endpoint,
-        # because the exception is not the "right" one if not set.
-        # For example, if access-key-id is invalid:
-        #      1. if endpoint is set, exception is InvalidAccessKeyId.NotFound
-        #      2. if endpoint isn't set, exception is SDK.InvalidRegionId
-        # that's caused by query endpoint failed.
-        # @remark SDk will cache endpoints, however it will query endpoint for the first
-        #      time, so it's good for performance to set the endpoint.
-        if request.get_product() not in rtc_user_config.user_config_endpoints:
-            rtc_user_config.modify_point(request.get_product(), region_id, endpoint)
 
         # Use HTTP, x3 times faster than HTTPS.
         rtc_request.set_default_protocol_type(rtc_protocol_type.HTTP)
