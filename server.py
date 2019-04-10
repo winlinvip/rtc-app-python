@@ -4,7 +4,6 @@
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkrtc.request.v20180111 import CreateChannelRequest
 from aliyunsdkcore.acs_exception.exceptions import ServerException
-import aliyunsdkcore.profile.region_provider as rtc_user_config
 import aliyunsdkcore.request as rtc_request
 import aliyunsdkcore.http.protocol_type as rtc_protocol_type
 
